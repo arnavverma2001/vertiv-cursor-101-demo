@@ -1,0 +1,15 @@
+---
+description: Power and cooling terms used in this fleet
+alwaysApply: true
+---
+
+# Domain glossary
+
+- **UPS** — uninterruptible power supply. This fleet uses row-level modules. Load percent is output kW divided by nameplate kW. Battery health is state of health, not state of charge. Runtime is the estimated minutes of support at the current load.
+- **PDU** — rack power distribution unit. Outlet power is metered in kW. The console also shows amps assuming 208 V single-phase. One PDU feeds one rack and is fed by one UPS.
+- **Nameplate** — the rated kW of a UPS. Auxiliary kW is the small non-IT draw added before load percent is computed.
+- **CRAC** — computer-room air conditioner, direct expansion. **CRAH** — computer-room air handler, chilled-water coil. Both report supply air, return air, fan speed, and a setpoint. Supply above setpoint is the cooling rule. Return is the air coming back from the room.
+- **Rack inlet** — air temperature at the front of the cabinet, cold-aisle side. ASHRAE TC 9.9 class A1 recommended range is 18–27°C. The allowable upper bound used here is 32°C. The current rule flags inlet above 27°C (warning) and above 32°C (critical).
+- **CDU** — coolant distribution unit. It moves conditioned liquid to high-density racks and is the subject of `docs/feature-specs/liquid-cooling-cdu.md`. It is not in the fleet yet.
+- **kW and kVA** — the console uses kW. kVA is apparent power; kW is real power after power factor. Do not mix them in one field.
+- **Critical and warning** — critical outranks warning. One rule on one subject emits only the higher severity.
