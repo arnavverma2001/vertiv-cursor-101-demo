@@ -1,0 +1,16 @@
+---
+description: How HelioSpan Monitor is structured and how to extend it
+alwaysApply: true
+---
+
+# HelioSpan Monitor conventions
+
+HelioSpan Monitor is a read-only operations console for UPS modules, rack PDUs, and CRAC/CRAH units. Python 3.11+, FastAPI, Pydantic v2, and a static UI in `heliospan/static` with no build step.
+
+- Keep alert evaluation pure. `evaluate_readings` takes readings and a timestamp. It does not read the clock, the network, or the store.
+- Device kinds are `ups`, `pdu`, and `cooling`. Racks are separate subjects because inlet temperature belongs to the cabinet. A new kind is handled in the seed, the simulator, the snapshot builder, and the rule engine. An unknown kind should raise, not be skipped.
+- CRAC and CRAH share air metrics and differ by `cooling_subtype`. A coolant distribution unit is not a cooling subtype.
+- Derive UPS load from the PDUs that module feeds, plus `auxiliary_kw`. Do not sample load as an independent random walk.
+- JSON is snake_case. Prefer extending the fleet snapshot and device detail over adding a parallel API.
+- Operator-facing strings in `heliospan/static` read like a production console. Do not label the product as a demo, sample, mock, or prototype in the UI. Workshop notes belong in `DEMO.md` and the README.
+- No new external services, databases, or credentials. State stays in memory.
