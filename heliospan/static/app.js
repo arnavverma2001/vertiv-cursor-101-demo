@@ -16,6 +16,10 @@ const TONE = {
   supplyCriticalDelta: 5,
   fanWarningPct: 90,
   fanCriticalPct: 97,
+  inputNominalV: 480,
+  outputNominalV: 208,
+  voltageWarningBand: 0.05,
+  voltageCriticalBand: 0.08,
 };
 
 const SERIES_COLOR = {
@@ -109,6 +113,13 @@ function outletTone(value) {
   return above(value, TONE.outletWarningKw, TONE.outletCriticalKw);
 }
 
+function voltageTone(value, nominal) {
+  const deviation = Math.abs(value - nominal) / nominal;
+  if (deviation > TONE.voltageCriticalBand) return "critical";
+  if (deviation > TONE.voltageWarningBand) return "warning";
+  return "ok";
+}
+
 function metricTone(key, value, context) {
   if (key === "load_pct") return loadTone(value);
   if (key === "battery_health_pct") return below(value, TONE.batteryWarningPct, TONE.batteryCriticalPct);
@@ -116,6 +127,8 @@ function metricTone(key, value, context) {
   if (key === "inlet_temp_c") return inletTone(value);
   if (key === "max_outlet_kw") return outletTone(value);
   if (key === "fan_speed_pct") return above(value, TONE.fanWarningPct, TONE.fanCriticalPct);
+  if (key === "input_voltage_v") return voltageTone(value, TONE.inputNominalV);
+  if (key === "output_voltage_v") return voltageTone(value, TONE.outputNominalV);
   if (key === "supply_temp_c" && context && context.setpoint_c != null) {
     return above(value - context.setpoint_c, TONE.supplyWarningDelta, TONE.supplyCriticalDelta);
   }
@@ -194,6 +207,10 @@ function applyValues(values) {
   document.querySelectorAll("[data-tone-k]").forEach((el) => {
     const tone = values[el.dataset.toneK];
     if (tone && el.dataset.tone !== tone) el.dataset.tone = tone;
+  });
+  document.querySelectorAll("[data-sev-k]").forEach((el) => {
+    const severity = values[el.dataset.sevK];
+    if (severity && el.dataset.sev !== severity) el.dataset.sev = severity;
   });
 }
 
@@ -473,9 +490,10 @@ function buildDevice(deviceId) {
 }
 
 function alertRow(alert) {
-  return `<a class="alert-row card" data-sev="${esc(alert.severity)}" href="${hrefFor(alert)}">
+  frameValues[`sev:${alert.id}`] = alert.severity;
+  return `<a class="alert-row card" data-sev="${esc(alert.severity)}" data-sev-k="sev:${alert.id}" href="${hrefFor(alert)}">
     ${pill(`pill:alert:${alert.id}`, alert.severity)}
-    <span><strong>${esc(alert.rule_name)}</strong><p>${esc(alert.message)}</p></span>
+    <span><strong>${esc(alert.rule_name)}</strong><p>${slot(`msg:${alert.id}`, alert.message)}</p></span>
     <span><strong>${esc(alert.subject_name)}</strong><p>${esc(alert.site_name)} · ${esc(alert.room_name)}</p></span>
     <span class="mono">${slot(`aval:${alert.id}`, formatMetric(alert.value, alert.unit), alert.severity)}</span>
     <span class="mono dim">${slot(`age:${alert.id}`, age(alert.opened_at))}</span>
