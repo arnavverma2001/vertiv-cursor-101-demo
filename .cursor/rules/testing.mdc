@@ -5,10 +5,10 @@ alwaysApply: true
 
 # Testing
 
-Run `./scripts/test.sh` or `pytest` from the repo root. `pytest.ini` puts the repo root on `pythonpath`.
+Run `./scripts/test.sh` from the repo root. That configures the Debug build and runs CTest (GoogleTest).
 
 - Every new alert rule needs tests for the warning band, the critical band, and the exact threshold that must stay quiet. Critical suppresses warning on the same rule; test that only one alert comes back.
-- Compare against the constants in `heliospan/services/rules.py`. Do not lock tests to a copied literal that will drift from the constant.
-- API tests use `create_app(run_simulator=False)` and the `client` fixture. Tick the store explicitly when a test needs another reading.
+- Compare against the constants in `include/heliospan/rules.hpp`. Do not lock tests to a copied literal that will drift from the constant.
+- HTTP tests live in `tests/test_api.cpp`. They start the server with the sampler paused. Tick the store explicitly when a test needs another reading.
 - Simulator band tests should run many ticks and assert ranges, not a single float.
 - Inject readings into `evaluate_readings` for rule tests. Do not sleep on the 2-second loop.

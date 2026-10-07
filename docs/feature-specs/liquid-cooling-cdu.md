@@ -143,21 +143,22 @@ Add cases beside the current rule tests. Inject readings. Do not sleep on the sa
 
 Likely files, because each kind is dispatched explicitly today:
 
-- `heliospan/models/domain.py` — kind literal, CDU fields, room snapshot card
-- `heliospan/services/seed.py` — CDU-1 and CDU-2
-- `heliospan/services/simulator.py` — channels and the leak schedule
-- `heliospan/services/rules.py` — branch, constants, catalog, chart thresholds
-- `heliospan/services/store.py` — room card and device detail
-- `heliospan/static/app.js` and `heliospan/static/styles.css` — room strip, leak banner, tones
-- `tests/test_rules.py`, `tests/test_api.py`, `tests/test_simulator.py`
+- `include/heliospan/domain.hpp` — device kind, CDU fields, room snapshot card
+- `src/seed.cpp` — CDU-1 and CDU-2
+- `src/simulator.cpp` — channels and the leak schedule
+- `include/heliospan/rules.hpp` and `src/rules.cpp` — constants, branch, catalog, chart thresholds
+- `src/store.cpp` and `src/json_codec.cpp` — room card, device detail, JSON field names
+- `web/app.js` and `web/styles.css` — room strip, leak banner, tones
+- `tests/test_rules.cpp`, `tests/test_api.cpp`, `tests/test_simulator.cpp`
 
 ## Constraints
 
-- Python 3.11+, the current FastAPI app, no new services and no new credentials.
+- C++17, the current cpp-httplib process, no new services and no new credentials.
 - In-memory only. History length stays the existing ring buffer.
 - Do not change existing rule thresholds or the seeded behavior of UPS, PDU, CRAC, CRAH, or rack inlet tests.
 - Keep JSON field names in snake_case.
 - Operator-facing copy should read like the rest of the console.
+- No new system packages. Stay with the libraries CMake already fetches.
 
 ## Acceptance check
 
